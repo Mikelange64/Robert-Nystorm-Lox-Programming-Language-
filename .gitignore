@@ -1,0 +1,8 @@
+# compiled binary
+lox
+
+# Go test cache
+*.test
+
+# environment variables if you ever add them
+.env
