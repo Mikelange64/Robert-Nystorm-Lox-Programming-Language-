@@ -16,7 +16,7 @@ func runFile(path string) error {
 	if err != nil {
 		return err
 	}
-		run(string(bytes))
+	run(string(bytes))
 	
 	if hadError { 
 		os.Exit(65)
@@ -38,8 +38,12 @@ func runPrompt() {
 }
 
 func run(source string) {
-    // Scanner and tokens don't exist yet — coming in Chapter 4
-    fmt.Println(source)
+    scanner := CreateScanner(source)
+    tokens := scanner.ScanTokens()
+    
+    for _, token := range tokens {
+    	fmt.Println(token)
+    }
 }
 
 func showError(line int, message string) {
@@ -47,7 +51,10 @@ func showError(line int, message string) {
 }
 
 func report(line int, where, message string) {
-	fmt.Fprintf("[line %d] Error%v: %v", line, where, message)
+	// full-featured languages have multiple ways of displaying errors; stderr, IDE error window, etc.
+	// Ideally we'd use an ErrorReporter stuct/interface of some sort that can be passed around
+	// We're not doing that here though,
+	fmt.Fprintf(os.Stderr, "[line %d] Error%v: %v", line, where, message)
 	hadError = true
 }
 

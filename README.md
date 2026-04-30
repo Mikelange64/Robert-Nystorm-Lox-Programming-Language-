@@ -4,7 +4,7 @@ I decided to learn how to write programming languages so that I can write my own
 
 This is an implementation of the Lox programming language, a toy language from Robert Nystrom's book [_Crafting Interpreters_](https://craftinginterpreters.com). I am not writing the full interpreter, as that is not required for what I want to do. The focus here is the **lexer** and **parser**.
 
-The original book implements Lox in Java. This implementation is written in **Go**.
+The original book implements Lox in Java, but I don't know (or like) Java, so this implementation is written in **Go**.
 
 Since Lox is a dynamically typed language, there is no type checking in this implementation. That is something I will learn separately.
 
@@ -32,7 +32,7 @@ lox/
     └── token/
         └── token.go
 ```
-
+So then I think my cleaner model is that the directory itself is the package. No need to declare the 
 ---
 
 ## Running the Project
