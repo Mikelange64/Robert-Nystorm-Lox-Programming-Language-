@@ -6,3 +6,6 @@ lox
 
 # environment variables if you ever add them
 .env
+
+# test files
+.test.lox

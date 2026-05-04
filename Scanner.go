@@ -1,6 +1,9 @@
 package main
 
-import "strconv"
+import (
+	"strconv";
+	"fmt"
+)
 
 var keywords = map[string]TokenType{
 	"and" :   AND,
@@ -94,15 +97,18 @@ func (s *Scanner) scanToken() {
        	} else {
       		s.addToken(GREATER, nil)
        	}
-    case '/' :
-        if s.match('/') {
-            // A comment goes until the end of the line
-            for s.peek() != '\n' && !s.isAtEnd() {
-               	s.advance()
-            }
-        } else {
-            s.addToken(SLASH, nil)
-        }
+	case '/' :
+	    if s.match('/') {
+	        // A comment goes until the end of the line
+	        for s.peek() != '\n' && !s.isAtEnd() {
+	           	s.advance()
+	        }
+	    } else if s.match('*') {
+	       	// for multi line comments
+	        s.blockComment()
+	    } else {
+	        s.addToken(SLASH, nil)
+	    }
     // We ignore white space, tabs, new lines, and
     case ' ' :
     case '\r' :
@@ -171,14 +177,38 @@ func (s *Scanner) string() {
 }
 
 func (s *Scanner) match(expected byte) bool {
-	if s.isAtEnd() {
-		return false
-	}
-	if s.peek() == expected {
-		return false
-	}
-	s.current++
-	return true
+    if s.isAtEnd() {
+        return false
+    }
+    if s.peek() == expected {
+        s.current++
+        return true
+    }
+    return false
+}
+
+func (s *Scanner) blockComment() {
+	fmt.Printf("blockComment started, peek='%c' peekNext='%c'\n", s.peek(), s.peekNext())
+    depth := 1
+	for depth > 0 && !s.isAtEnd() {
+	    if s.peek() == '/' && s.peekNext() == '*' {
+            s.advance()
+            s.advance()
+            depth++
+        } else if s.peek() == '*' && s.peekNext() == '/' {
+            s.advance()
+            s.advance()
+            depth--
+        } else {
+            if s.peek() == '\n' {
+                s.line++
+            }
+            s.advance()
+        }
+    }
+    if depth > 0 {
+        showError(s.line, "Unterminated block comment")
+    }
 }
 
 func (s *Scanner) peek() byte {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"; 
-	"os"; 
+	"fmt";
+	"os";
 	"bufio"
 )
 
@@ -17,30 +17,32 @@ func runFile(path string) error {
 		return err
 	}
 	run(string(bytes))
-	
-	if hadError { 
+
+	if hadError {
 		os.Exit(65)
 	}
 	return nil
 }
 
 func runPrompt() {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		fmt.Print("> ")
-		line, err := reader.ReadString('\n')
-		if err != nil { // if there are no more lines
-			break
-		}
-		run(line)
-		hadError = false
-	}
+    scanner := bufio.NewScanner(os.Stdin)
+    for {
+        fmt.Print("> ")
+        // Scan() waits for the next line and returns false on EOF/Error
+        if !scanner.Scan() {
+            break
+        }
+
+        line := scanner.Text() // This is already clean of \n or \r\n
+        run(line)
+        hadError = false
+    }
 }
 
 func run(source string) {
     scanner := CreateScanner(source)
     tokens := scanner.ScanTokens()
-    
+
     for _, token := range tokens {
     	fmt.Println(token)
     }
@@ -59,6 +61,17 @@ func report(line int, where, message string) {
 }
 
 func main() {
+	// expr := Binary{
+	// 	Left : Unary {
+	// 		Operator : Token{ Type : MINUS, Lexeme : "-", Literal : nil, Line : 1},
+	// 		Right : Literal{Value : 123},
+	// 	},
+	// 	Operator : Token{ Type : STAR, Lexeme : "*", Literal : nil, Line : 1},
+	// 	Right : Grouping{ Expression : Literal{Value : 45.67} },
+	// }
+
+	// fmt.Println(printExpr(expr))
+
 	if len(os.Args) > 2 {
 		fmt.Println("Usage: jlox [script]")
 		os.Exit(64)

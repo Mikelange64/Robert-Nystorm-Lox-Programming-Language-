@@ -23,16 +23,13 @@ A **parser** takes those tokens and builds a tree structure that represents the 
 ```
 lox/
 ├── go.mod
-├── main.go
-└── internal/
-    ├── scanner/
-    │   └── scanner.go
-    ├── parser/
-    │   └── parser.go
-    └── token/
-        └── token.go
+├── lox.go
+├── Scanner.go
+├── Token.go
+├── TokenTypes.go
+└── README.go
 ```
-So then I think my cleaner model is that the directory itself is the package. No need to declare the 
+
 ---
 
 ## Running the Project
@@ -40,13 +37,13 @@ So then I think my cleaner model is that the directory itself is the package. No
 **Interactive mode** — type Lox code directly in the terminal:
 
 ```
-go run main.go
+go run lox.go
 ```
 
 **File mode** — run a `.lox` source file:
 
 ```
-go run main.go script.lox
+go run loxw.go script.lox
 ```
 
 ---
