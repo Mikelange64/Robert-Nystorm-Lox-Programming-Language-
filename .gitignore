@@ -9,3 +9,4 @@ lox
 
 # test files
 .test.lox
+.parsers.goi

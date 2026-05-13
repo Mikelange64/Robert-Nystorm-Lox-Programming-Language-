@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt";
-	"os";
 	"bufio"
+	"fmt"
+	"os"
 )
 
-var hadError bool = false
+var interpreter Interpreter
 
 func runFile(path string) error {
 	bytes, err := os.ReadFile(path)
@@ -16,48 +16,47 @@ func runFile(path string) error {
 	if err != nil {
 		return err
 	}
-	run(string(bytes))
-
-	if hadError {
+	if err := run(string(bytes)); err != nil {
 		os.Exit(65)
 	}
 	return nil
 }
 
 func runPrompt() {
-    scanner := bufio.NewScanner(os.Stdin)
-    for {
-        fmt.Print("> ")
-        // Scan() waits for the next line and returns false on EOF/Error
-        if !scanner.Scan() {
-            break
-        }
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print("> ")
+		// Scan() waits for the next line and returns false on EOF/Error
+		if !scanner.Scan() {
+			break
+		}
 
-        line := scanner.Text() // This is already clean of \n or \r\n
-        run(line)
-        hadError = false
-    }
+		line := scanner.Text() // This is already clean of \n or \r\n
+		if err := run(line); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+	}
 }
 
-func run(source string) {
-    scanner := CreateScanner(source)
-    tokens := scanner.ScanTokens()
+func run(source string) error {
+	scanner := CreateScanner(source)
+	tokens, errs := scanner.ScanTokens()
+	if len(errs) > 0 {
+		for _, err := range errs {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		return errs[0]
+	}
+	parser := CreateParser(tokens)
+	expression, err := parser.Parse()
+	if err != nil {
+		return err
+	}
 
-    for _, token := range tokens {
-    	fmt.Println(token)
-    }
-}
-
-func showError(line int, message string) {
-	report(line, "", message)
-}
-
-func report(line int, where, message string) {
-	// full-featured languages have multiple ways of displaying errors; stderr, IDE error window, etc.
-	// Ideally we'd use an ErrorReporter stuct/interface of some sort that can be passed around
-	// We're not doing that here though,
-	fmt.Fprintf(os.Stderr, "[line %d] Error%v: %v", line, where, message)
-	hadError = true
+	if err := interpreter.Interpret(expression); err != nil {
+		return err
+	}
+	return nil
 }
 
 func main() {
